@@ -1,4 +1,3 @@
-from openpyxl.styles import Font
 import openpyxl
 import pdfkit
 from jinja2 import Environment, FileSystemLoader
@@ -6,6 +5,8 @@ import csv
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+from openpyxl.styles import Font
+import doctest
 
 
 class DataSet:
@@ -13,14 +14,22 @@ class DataSet:
     Attributes:
         file_name (str): название файла
         profession_name (str): профессия, для которой производится выборка
+    >>> type(DataSet('vacancies_by_year.csv', 'Аналитик')).__name__
+    'DataSet'
+    >>> DataSet('vacancies_by_year.csv', 'Аналитик').file_name
+    'vacancies_by_year.csv'
+    >>> DataSet('vacancies_by_year.csv', 'Аналитик').profession_name
+    'Аналитик'
+    >>> DataSet('vacancies_by_year.csv', 'Тестировщик').profession_name
+    'Тестировщик'
     """
 
     def __init__(self, file_name, profession_name):
-        """ Инициализирует объект DataSet.
+        ''' Инициализирует объект DataSet.
         Args:
             file_name (str): название файла
             profession_name (str): профессия, для которой производится выборка
-        """
+        '''
         self.file_name = file_name
         self.profession_name = profession_name
 
@@ -95,6 +104,14 @@ class Vacancy:
             salary (экземпляр класса Salary): данные о зарплате
             area_name (str): место публикации вакансии
             published_at (str): дата и время публикации
+    >>> Vacancy({'name':'Программист', 'salary_from':10, 'salary_to':20.5, 'salary_currency':'RUR', 'area_name':'Москва', 'published_at':'2007-12-03T17:34:36+0300'}).name
+    'Программист'
+    >>> type(Vacancy({'name':'Программист', 'salary_from':10, 'salary_to':20.5, 'salary_currency':'RUR', 'area_name':'Москва', 'published_at':'2007-12-03T17:34:36+0300'})).__name__
+    'Vacancy'
+    >>> Vacancy({'name':'Программист', 'salary_from':10, 'salary_to':20.5, 'salary_currency':'RUR', 'area_name':'Москва', 'published_at':'2007-12-03T17:34:36+0300'}).area_name
+    'Москва'
+    >>> Vacancy({'name':'Программист', 'salary_from':10, 'salary_to':20.5, 'salary_currency':'RUR', 'area_name':'Москва', 'published_at':'2007-12-03T17:34:36+0300'}).published_at
+    '2007-12-03T17:34:36+0300'
     """
 
     def __init__(self, dct):
@@ -111,6 +128,12 @@ class Vacancy:
         """ Вычисляет среднюю зарплату в рублях (конвертация с помоью словаря currency_to_rub)
         :returns:
             float: средняя зарплата в рублях
+        >>> Vacancy({'name':'Программист', 'salary_from':10, 'salary_to':20.5, 'salary_currency':'RUR', 'area_name':'Москва', 'published_at':'2007-12-03T17:34:36+0300'}).get_average()
+        15.0
+        >>> Vacancy({'name':'Программист', 'salary_from':'10', 'salary_to':20.9999999, 'salary_currency':'RUR', 'area_name':'Москва', 'published_at':'2007-12-03T17:34:36+0300'}).get_average()
+        15.0
+        >>> Vacancy({'name':'Программист', 'salary_from':10, 'salary_to':'20', 'salary_currency':'EUR', 'area_name':'Москва', 'published_at':'2007-12-03T17:34:36+0300'}).get_average()
+        898.5
         """
         return 0.5 * (self.salary.salary_from * self.salary.currency_to_rub[self.salary.salary_currency] +
                       self.salary.salary_to * self.salary.currency_to_rub[self.salary.salary_currency])
@@ -122,6 +145,14 @@ class Salary:
         salary_from (int): нижняя граница вилки оклада
         salary_to (int): верхняя граница вилки оклада
         salary_currency (str): валюта оклада
+    >>> type(Salary(10.0, 20.4, 'RUR')).__name__
+    'Salary'
+    >>> Salary(10.0, 20.4, 'RUR').salary_to
+    20
+    >>> Salary(10.284, 20.4, 'RUR').salary_from
+    10
+    >>> Salary(10.0, 20.4, 'RUR').salary_currency
+    'RUR'
     """
     currency_to_rub = {
         "AZN": 35.68,
@@ -157,6 +188,12 @@ class Report:
             dct_years_count_filt (dict): распределение количества вакансий по годам для выбранной профессии
             dct_salary_by_sity (dict): распределение уровня средних зарплат по городам
             dct_part (dict): доля вакансий по городам (в процентах)
+    >>> Report({'2007': 10000, '2020': 50000}, {}, {}, {}, [], []).dct_years_salary['2020']
+    50000
+    >>> Report({}, {'2007': 100, '2020': 50}, {}, {}, [], []).dct_years_count['2007']
+    100
+    >>> dict(Report({}, {}, {}, {}, [], [('Москва', 0.563), ('Санкт-Петербург', 0.115)]).dct_part)['Санкт-Петербург']
+    0.115
     """
 
     def __init__(self, dct_years_salary, dct_years_count, dct_years_salary_filt, dct_years_count_filt,
@@ -357,4 +394,3 @@ elif user_choice == 'статистика':
     report.generate_excel()
 else:
     print('Неверный формат ввода')
-
