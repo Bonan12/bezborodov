@@ -283,7 +283,7 @@ dct_years_salary, dct_years_count, dct_years_salary_filt, dct_years_count_filt, 
 report = Report(dct_years_salary, dct_years_count, dct_years_salary_filt, dct_years_count_filt, dct_salary_by_sity,
                 dct_part)
 
-user_choice = input('Cтатистика или вакансии ?: ').lower()
+user_choice = input('вакансии или статистика ?: ').lower()
 if user_choice == 'вакансии':
     report.generate_image()
 elif user_choice == 'статистика':
