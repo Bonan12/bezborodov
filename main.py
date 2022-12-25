@@ -357,3 +357,4 @@ elif user_choice == 'статистика':
     report.generate_excel()
 else:
     print('Неверный формат ввода')
+
