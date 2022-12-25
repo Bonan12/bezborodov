@@ -289,4 +289,4 @@ if user_choice == 'вакансии':
 elif user_choice == 'статистика':
     report.generate_excel()
 else:
-    print('Некорректный ввод')
+    print('Неверный формат ввода')
